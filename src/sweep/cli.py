@@ -14,6 +14,19 @@ def format_size(size):
         return f"{size_mb:.1f} MB"
 
 
+def classify_file(item):
+    extension = item.suffix.lower()
+
+    if extension in {".jpg", ".png", ".jpeg", ".gif", ".webp"}:
+        return "Images"
+    elif extension in {".docx", ".pdf", ".md", ".txt"}:
+        return "Documents"
+    elif extension in {".zip", ".rar", ".7z", ".tar", ".gz"}:
+        return "Archives"
+    else:
+        return "Other"
+
+
 def main():
     # The first argument is the command itself, so a directory must be
     # provided as the second argument.
@@ -41,13 +54,22 @@ def main():
         if item.is_file():
             count += 1
             name = item.name
+            category = classify_file(item)
             suffix = item.suffix
             size = item.stat().st_size
             total_size += size
             formatted_size = format_size(size)
 
-            print(f"Name: {name}\nSuffix: {suffix}\nSize: {formatted_size}\n")
+            print(
+                f"Name: {name}\n"
+                f"Category: {category}\n"
+                f"Suffix: {suffix}\n"
+                f"Size: {formatted_size}\n"
+            )
 
     formatted_total_size = format_size(total_size)
 
-    print(f"Found: {count} files\nTotal size: {formatted_total_size}")
+    print(
+        f"Found: {count} files\n"
+        f"Total size: {formatted_total_size}"
+    )
