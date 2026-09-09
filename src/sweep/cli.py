@@ -47,6 +47,10 @@ def main():
     print(f"Scanning: {directory}\n")
 
     count, total_size = 0, 0
+    image_count = 0
+    document_count = 0
+    archive_count = 0
+    other_count = 0
 
     # Scan only files directly inside the directory.
     # Subdirectories are intentionally ignored for now.
@@ -55,6 +59,16 @@ def main():
             count += 1
             name = item.name
             category = classify_file(item)
+
+            if category == "Images":
+                image_count += 1
+            elif category == "Documents":
+                document_count += 1
+            elif category == "Archives":
+                archive_count += 1
+            else:
+                other_count += 1
+
             suffix = item.suffix
             size = item.stat().st_size
             total_size += size
@@ -71,5 +85,12 @@ def main():
 
     print(
         f"Found: {count} files\n"
-        f"Total size: {formatted_total_size}"
+        f"Total size: {formatted_total_size}\n"
+    )
+
+    print(
+        f"\nImages: {image_count}\n"
+        f"Documents: {document_count}\n"
+        f"Archives: {archive_count}\n"
+        f"Other: {other_count}"
     )
