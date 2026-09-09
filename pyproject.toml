@@ -1,0 +1,17 @@
+[project]
+name = "sweep"
+version = "0.1.0"
+description = "Automate the boring work of keeping your files organized"
+readme = "README.md"
+authors = [
+    { name = "RaioViajante", email = "195070286+RaioViajante@users.noreply.github.com" }
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[project.scripts]
+sweep = "sweep:main"
+
+[build-system]
+requires = ["uv_build>=0.12.11,<0.13.0"]
+build-backend = "uv_build"
