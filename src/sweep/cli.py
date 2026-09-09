@@ -27,6 +27,10 @@ def classify_file(item):
         return "Other"
 
 
+def get_destination(directory, category, item):
+    return directory / category / item.name
+
+
 def main():
     # The first argument is the command itself, so a directory must be
     # provided as the second argument.
@@ -71,6 +75,8 @@ def main():
 
             suffix = item.suffix
             size = item.stat().st_size
+            destination = get_destination(directory, category, item)
+
             total_size += size
             formatted_size = format_size(size)
 
@@ -79,6 +85,7 @@ def main():
                 f"Category: {category}\n"
                 f"Suffix: {suffix}\n"
                 f"Size: {formatted_size}\n"
+                f"Destination: {destination}\n"
             )
 
     formatted_total_size = format_size(total_size)
