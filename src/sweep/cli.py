@@ -1,5 +1,6 @@
 from pathlib import Path
 import sys
+import shutil
 
 
 def format_size(size):
@@ -34,13 +35,18 @@ def get_destination(directory, category, item):
 def main():
     # The first argument is the command itself, so a directory must be
     # provided as the second argument.
-    if len(sys.argv) < 2:
-        print("Usage: sweep <directory>")
+    if len(sys.argv) < 3:
+        print("Usage: sweep <preview|run> <directory>")
         return
 
-    # expanduser() resolves paths such as ~/Downloads to the user's home.
-    directory = Path(sys.argv[1]).expanduser()
+    action = sys.argv[1].lower()
 
+    # expanduser() resolves paths such as ~/Downloads to the user's home.
+    directory = Path(sys.argv[2]).expanduser()
+
+    if action not in {"preview", "run"}:
+        print(f"Unknown action: {action}")
+        return
     if not directory.exists():
         print("Directory does not exist.")
         return
@@ -58,7 +64,7 @@ def main():
 
     # Scan only files directly inside the directory.
     # Subdirectories are intentionally ignored for now.
-    for item in directory.iterdir():
+    for item in list(directory.iterdir()):
         if item.is_file():
             count += 1
             name = item.name
@@ -76,6 +82,14 @@ def main():
             suffix = item.suffix
             size = item.stat().st_size
             destination = get_destination(directory, category, item)
+
+            if action == "run":
+                if destination.exists():
+                    print(f"Destination already exists: {destination}")
+                else:
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.move(item, destination)
+                    print(f"Moved: {item.name} -> {destination}")
 
             total_size += size
             formatted_size = format_size(size)
