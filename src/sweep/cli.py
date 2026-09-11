@@ -1,35 +1,8 @@
 from pathlib import Path
 import sys
-import shutil
-
-
-def format_size(size):
-    # Convert a size in bytes to a more human-readable representation.
-    if size < 1024:
-        return f"{size} bytes"
-    elif size < (1024 * 1024):
-        size_kb = size / 1024
-        return f"{size_kb:.1f} KB"
-    else:
-        size_mb = size / (1024 * 1024)
-        return f"{size_mb:.1f} MB"
-
-
-def classify_file(item):
-    extension = item.suffix.lower()
-
-    if extension in {".jpg", ".png", ".jpeg", ".gif", ".webp"}:
-        return "Images"
-    elif extension in {".docx", ".pdf", ".md", ".txt"}:
-        return "Documents"
-    elif extension in {".zip", ".rar", ".7z", ".tar", ".gz"}:
-        return "Archives"
-    else:
-        return "Other"
-
-
-def get_destination(directory, category, item):
-    return directory / category / item.name
+from sweep.formatter import format_size
+from sweep.classifier import classify_file
+from sweep.organizer import get_destination, move_file
 
 
 def main():
@@ -86,14 +59,13 @@ def main():
             destination = get_destination(directory, category, item)
 
             if action == "run":
-                if destination.exists():
-                    print(f"Destination already exists: {destination}")
-                    skipped_count += 1
-                else:
-                    destination.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.move(item, destination)
+                moved = move_file(item, destination)
+                if moved:
                     moved_count += 1
                     print(f"Moved: {item.name} -> {destination}")
+                else:
+                    skipped_count += 1
+                    print(f"Destination already exists: {destination}")
 
             total_size += size
             formatted_size = format_size(size)
