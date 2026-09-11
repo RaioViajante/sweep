@@ -61,6 +61,8 @@ def main():
     document_count = 0
     archive_count = 0
     other_count = 0
+    moved_count = 0
+    skipped_count = 0
 
     # Scan only files directly inside the directory.
     # Subdirectories are intentionally ignored for now.
@@ -86,9 +88,11 @@ def main():
             if action == "run":
                 if destination.exists():
                     print(f"Destination already exists: {destination}")
+                    skipped_count += 1
                 else:
                     destination.parent.mkdir(parents=True, exist_ok=True)
                     shutil.move(item, destination)
+                    moved_count += 1
                     print(f"Moved: {item.name} -> {destination}")
 
             total_size += size
@@ -115,3 +119,9 @@ def main():
         f"Archives: {archive_count}\n"
         f"Other: {other_count}"
     )
+
+    if action == "run":
+        print(
+            f"\nMoved: {moved_count}\n"
+            f"Skipped: {skipped_count}"
+        )
