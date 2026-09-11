@@ -1,8 +1,10 @@
 from pathlib import Path
 import sys
+
 from sweep.formatter import format_size
 from sweep.classifier import classify_file
 from sweep.organizer import get_destination, move_file
+from sweep.categories import create_category_counts
 
 
 def main():
@@ -29,11 +31,8 @@ def main():
 
     print(f"Scanning: {directory}\n")
 
+    category_counts = create_category_counts()
     count, total_size = 0, 0
-    image_count = 0
-    document_count = 0
-    archive_count = 0
-    other_count = 0
     moved_count = 0
     skipped_count = 0
 
@@ -45,14 +44,7 @@ def main():
             name = item.name
             category = classify_file(item)
 
-            if category == "Images":
-                image_count += 1
-            elif category == "Documents":
-                document_count += 1
-            elif category == "Archives":
-                archive_count += 1
-            else:
-                other_count += 1
+            category_counts[category] += 1
 
             suffix = item.suffix
             size = item.stat().st_size
@@ -85,12 +77,8 @@ def main():
         f"Total size: {formatted_total_size}\n"
     )
 
-    print(
-        f"\nImages: {image_count}\n"
-        f"Documents: {document_count}\n"
-        f"Archives: {archive_count}\n"
-        f"Other: {other_count}"
-    )
+    for category, category_count in category_counts.items():
+        print(f"{category}: {category_count}")
 
     if action == "run":
         print(
